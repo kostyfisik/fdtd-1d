@@ -16,7 +16,7 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# 1D FDTD check Fresnel equations
+# 1D FDTD half wavelength slab
 # Based on Understanding the Finite-Difference Time-Domain Method, John
 # B. Schneider, www.eecs.wsu.edu/~schneidj/ufdtd, 2010.
 
@@ -28,14 +28,15 @@ from time import sleep
 imp0=377.0  # Free space impedance
 
 size=1800  # Domain size
+wavelength = int(size/20.0)
 #Dielectric distribution
-epsilon1 = 8
+epsilon1 = 2
 epsilon2 = 2
 n1 = np.sqrt(epsilon1)
 n2 = np.sqrt(epsilon2)
 eps= np.ones(size)
-eps[:int(size/2.0)] = epsilon1
-eps[int(size/2.0):] = epsilon2
+eps[:] = epsilon1
+#eps[int(size/2.0):] = epsilon2
 
 # setting  ABC constants _AFTER_ epsilon (we need speed of ligth in media)
 # Taflove, eq. 6.35
@@ -53,17 +54,14 @@ wr_nm1,wr_n,wr_np1 = 0,0,0 # Field at x=size at time steps n-1, n, n+1
 wrm1_nm1,wrm1_n,wrm1_np1 = 0,0,0 # Field at x=size-1 at time steps n-1, n, n+1
 
 #Source 
-source_width = 30.0*np.sqrt(max(epsilon1,epsilon2))
+source_width = wavelength*3.0*np.sqrt(max(epsilon1,epsilon2))
 delay = 10*source_width
 source_x = int(1.0*size/10.0)  #Source position
 def source(current_time, delay, source_width):
-    return m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
-#Monitor points
-Emax1_x = int(2.0*size/15.0)
-Emax2_x = int(14.0*size/15.0)
-Emax1, Emax2 = 0,0
-Hmax1, Hmax2 = 0,0
-
+    amp =  m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
+    if current_time > delay:
+        amp = 1.0
+    return amp/np.sqrt(epsilon1)*np.sin(2*np.pi*current_time*c/wavelength)
 
 #Model
 total_steps = int(size*3.0+delay)  # Time stepping
@@ -100,27 +98,13 @@ for time in xrange(total_steps):
     wl_nm1, wlp1_nm1 = wl_n, wlp1_n
     wl_n, wlp1_n = wl_np1, wlp1_np1
     ######################
-    #Monitor
-    ######################
-    Emax1 = max(Emax1, np.abs(ez[Emax1_x]))
-    Emax2 = max(Emax2, np.abs(ez[Emax2_x]))
-    Hmax1 = max(Hmax1, np.abs(hy[Emax1_x]))
-    Hmax2 = max(Hmax2, np.abs(hy[Emax2_x]))
-    ######################
     # Output
     ######################
     if time % frame_interval == 0:
         plt.clf()
         plt.title("Ez after t=%i"%time)
-        plt.plot(all_steps, ez, all_steps, hy*imp0)
+        plt.plot(all_steps, ez)
         plt.show()
-print("n1 = %f, n2 = %f" % (n1, n2))
-Fresnel_ratio = 1-np.abs((n1-n2)/(n1+n2))**2
-print("Fresnel equation ratio 1-|(n1-n2)/(n1+n2)| = %f" % Fresnel_ratio)
-FDTD_ratio = Emax2*Hmax2/(Emax1*Hmax1)
-print ("FDTD ratio = %f"%FDTD_ratio)
-error = np.abs((FDTD_ratio-Fresnel_ratio)/Fresnel_ratio)
-print("Error = %f%%" % (error*100.0) )
 
 
 
