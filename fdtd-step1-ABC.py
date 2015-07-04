@@ -29,10 +29,10 @@ from time import sleep
 
 imp0=377.0  # Free space impedance
 
-size=500  # Domain size
+size=200  # Domain size
 #Source 
-source_width = 30.0
-delay = 5*source_width
+source_width = 20.0
+delay = 3*source_width
 
 
 source_x = int(size/2.0)
@@ -40,14 +40,14 @@ def source(current_time, delay, source_width):
     return m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
 
 #Model
-total_steps = int(size+delay)  # Time stepping
+total_steps = int(size*2.0+delay)  # Time stepping
 frame_interval = int(total_steps/20.0)
 all_steps = np.linspace(0, size-1, size)
 
 
 ez = np.zeros(size)
 hy = np.zeros(size)
-for time in xrange(total_steps+1):
+for time in xrange(total_steps):
     e_left = ez[1]
     e_right = ez[-2]
     hy[:-1] = hy[:-1] + (ez[1:] - ez[:-1])/imp0
@@ -57,14 +57,10 @@ for time in xrange(total_steps+1):
     ez[0] = e_left
     ez[-1] = e_right
     # Output
-    if time % frame_interval == 0 or time+5 > total_steps:
+    if time % frame_interval == 0:
         plt.clf()
         plt.title("Ez after t=%i"%time)
         plt.plot(all_steps, ez)
-        plt.show()
-        plt.clf()
-        plt.title("Hy after t=%i"%time)
-        plt.plot(all_steps, hy*imp0)
         plt.show()
 
 

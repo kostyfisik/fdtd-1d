@@ -29,43 +29,58 @@ from time import sleep
 
 imp0=377.0  # Free space impedance
 
-size=500  # Domain size
+size=200  # Domain size
 #Source 
-source_width = 30.0
-delay = 5*source_width
+source_width = 10.0
+delay = 10*source_width
 
 
 source_x = int(size/2.0)
 def source(current_time, delay, source_width):
-    return m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
+    omega = 5000.0
+    return np.exp(-(current_time-delay)**2/(2.0 * source_width**2))#*np.sin(omega*current_time)
 
 #Model
-total_steps = int(size+delay)  # Time stepping
-frame_interval = int(total_steps/20.0)
+total_steps = int(size*1.5+delay)  # Time stepping
+frame_interval = int(total_steps/30.0)
 all_steps = np.linspace(0, size-1, size)
 
 
+pml = 11   #PML width
+m = 2   #PML order
+pml_index = np.linspace(0,1.0, pml)
+ones = np.ones(pml)
+sigma_max = 1.0
+sigma = pml_index*sigma_max
+#sigma = np.power(pml_index/pml,m)*sigma_max
+print(ones-sigma)
+
 ez = np.zeros(size)
 hy = np.zeros(size)
-for time in xrange(total_steps+1):
+for time in xrange(total_steps):
     e_left = ez[1]
-    e_right = ez[-2]
-    hy[:-1] = hy[:-1] + (ez[1:] - ez[:-1])/imp0
-    ez[1:] = ez[1:] + (hy[1:]-hy[:-1])*imp0
+    #e_right = ez[-2]
+    # hy[:-1] = hy[:-1] + (ez[1:] - ez[:-1])/imp0
+    # ez[1:] = ez[1:] + (hy[1:]-hy[:-1])*imp0
+    hy[:-1-pml] = hy[:-1-pml] + (ez[1:-pml] - ez[:-1-pml])/imp0
+    hy[-1-pml:-1] = (ones-sigma)*hy[-1-pml:-1] + (ez[-pml:] - ez[-1-pml:-1])/imp0
+    ez[1:-pml] = ez[1:-pml] + (hy[1:-pml]-hy[:-1-pml])*imp0
+    ez[-pml:] = (ones-sigma)*ez[-pml:] + (hy[-pml:]-hy[-1-pml:-1])*imp0
+
     ez[source_x] += source(time, delay, source_width)
     # ABC
     ez[0] = e_left
-    ez[-1] = e_right
+    #ez[-1] = e_right
     # Output
-    if time % frame_interval == 0 or time+5 > total_steps:
+    if time % frame_interval == 0:
         plt.clf()
         plt.title("Ez after t=%i"%time)
         plt.plot(all_steps, ez)
         plt.show()
-        plt.clf()
-        plt.title("Hy after t=%i"%time)
-        plt.plot(all_steps, hy*imp0)
-        plt.show()
+        # plt.clf()
+        # plt.title("Hy after t=%i"%time)
+        # plt.plot(all_steps, hy*imp0)
+        # plt.show()
 
 
 
