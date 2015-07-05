@@ -30,20 +30,24 @@ imp0=377.0  # Free space impedance
 
 size=400  # Domain size
 wavelength = int(size/5.0) #in host media
-factor = 2.0 # for slab lambda/2 
+factor = 4.0 # for slab lambda/4 
 
 #Dielectric distribution
-epsilon1 = 1.5 # host
-epsilon2 = 2 # slab
+epsilon1 = 1.2 # host
+epsilon2 = 4 # slab
 n1 = np.sqrt(epsilon1)
 n2 = np.sqrt(epsilon2)
 print("Epsilon in slab was set to be %f"%epsilon2)
 n2 = 1.0/int(wavelength*n1/n2/factor)*wavelength*n1/factor
 epsilon2=n2**2
 print("Corrected epsilon in slab is %f (to fit exactly to space step)"%epsilon2)
+n3 = (n2**2)/n1
+epsilon3=n3**2
 eps= np.ones(size)
 eps[:] = epsilon1
 eps[int(size/2.0):int(size/2.0)+int(wavelength*n1/n2/factor)] = epsilon2
+eps[int(size/2.0)+int(wavelength*n1/n2/factor):] = epsilon3
+print("After slab epsilon is %f"%epsilon3)
 
 refeps= np.ones(size)
 refeps[:] = epsilon1
@@ -163,7 +167,7 @@ for time in xrange(total_steps):
         s3 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
                                color='blue',alpha = 0.2)
         axs[2].add_patch(s3)
-        plt.savefig("step5-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+        plt.savefig("step6-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
         plt.draw()
         #    plt.show()
         plt.clf()
