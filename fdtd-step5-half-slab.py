@@ -33,8 +33,8 @@ wavelength = int(size/5.0) #in host media
 factor = 2.0 # for slab lambda/2 
 
 #Dielectric distribution
-epsilon1 = 2 # host
-epsilon2 = 3 # slab
+epsilon1 = 1.5 # host
+epsilon2 = 2 # slab
 n1 = np.sqrt(epsilon1)
 n2 = np.sqrt(epsilon2)
 print("Epsilon in slab was set to be %f"%epsilon2)
@@ -83,7 +83,7 @@ def source(current_time, delay, source_width):
     return amp/np.sqrt(epsilon1)*np.sin(2*np.pi*current_time*cref/wavelength)
 
 #Model
-total_steps = int(size*3.0+delay)  # Time stepping
+total_steps = int(size*4.0+delay)  # Time stepping
 frame_interval = int(total_steps/35.0)
 all_steps = np.linspace(0, size-1, size)
 
@@ -146,7 +146,7 @@ for time in xrange(total_steps):
     ######################
     if time % frame_interval == 0:
         #plt.clf()
-        fig, axs = plt.subplots(2,1)#, sharey=True, sharex=True)
+        fig, axs = plt.subplots(3,1)#, sharey=True, sharex=True)
         fig.tight_layout()
         #axs[0].title("Ez after t=%i"%time)
         axs[0].plot(all_steps, ez,all_steps, refez)        
@@ -159,6 +159,10 @@ for time in xrange(total_steps):
         s2 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
                                color='blue',alpha = 0.2)
         axs[1].add_patch(s2)
+        axs[2].plot(all_steps[:int(size/2.0)], ez[:int(size/2.0)]-refez[:int(size/2.0)])        
+        s3 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
+                               color='blue',alpha = 0.2)
+        axs[2].add_patch(s3)
         plt.savefig("FDTD-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
         plt.draw()
         #    plt.show()
