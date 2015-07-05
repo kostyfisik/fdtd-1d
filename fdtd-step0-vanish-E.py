@@ -52,14 +52,20 @@ for time in xrange(total_steps+1):
     ez[1:] = ez[1:] + (hy[1:]-hy[:-1])*imp0
     ez[source_x] += source(time, delay, source_width)
     if time % frame_interval == 0 or time+5 > total_steps:
+        fig, axs = plt.subplots(2,1)#, sharey=True, sharex=True)
+        fig.tight_layout()
+        plt.title("After t=%i"%time)
+        axs[0].plot(all_steps, ez, label="Ez")
+        axs[0].plot(all_steps, hy*imp0,  label="Hy*imp0")
+        axs[0].legend(loc='upper left')
+        axs[1].plot(all_steps, ez,  label="Ez")
+        axs[1].legend(loc='upper left')
+        plt.savefig("step0-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+        plt.draw()
+        #    plt.show()
         plt.clf()
-        plt.title("Ez after t=%i"%time)
-        plt.plot(all_steps, ez)
-        plt.show()
-        plt.clf()
-        plt.title("Hy after t=%i"%time)
-        plt.plot(all_steps, hy*imp0)
-        plt.show()
+        plt.close()
+
 
 
 
