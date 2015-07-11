@@ -30,18 +30,18 @@ from time import sleep
 
 imp0=377.0  # Free space impedance = sqrt(u0/e0)
 
-size=300  # Domain size
+size=301  # Domain size
 #Source 
-source_width = int(size/20.0)
-delay = 10*source_width
+source_width = int(size/30.0)
+delay = 15*source_width
 
 source_x = int(size/2.0)
 def source(current_time, delay, source_width):
     return np.exp(-(current_time-delay)**2/(2.0 * source_width**2))
 
 #Model
-total_steps = int(size+delay)  # Time stepping
-frame_interval = int(total_steps/12.0)
+total_steps = 2*int(size+delay)  # Time stepping
+frame_interval = int(total_steps/25.0)
 all_steps = np.linspace(0, size-1, size)
 
 ey = np.zeros(size)
@@ -60,22 +60,24 @@ Phx = np.zeros(size)
 Pex = np.zeros(size)
 
 for mm in xrange(int(pml_width)):
-    sx[mm] = sxmax*((pml_width-mm)/pml_width)**m
+    sx[mm+1] = sxmax*((pml_width-mm-0.5)/pml_width)**m
     sxm[mm] = sxmax*((pml_width-mm)/pml_width)**m  # Shifted to the right
     sx[size-mm-1] = sxmax*((pml_width-mm-0.5)/pml_width)**m  
     sxm[size-mm-1] = sxmax*((pml_width-mm)/pml_width)**m
+# print(sx, sxm)
 aex = np.exp(-sx*imp0)-1
 bex = np.exp(-sx*imp0)
 ahx = np.exp(-sxm*imp0)-1
 bhx = np.exp(-sxm*imp0)
 
-x = np.arange(1,size-1,1)
+x = np.arange(0,size-1,1)
+x1 = np.arange(0,size-1,1)
 
 for time in xrange(total_steps+1):
     Phx[x] = bhx[x]*Phx[x] + ahx[x]*(ey[x+1] - ey[x])
     hz[x] = hz[x] + (ey[x+1] - ey[x])/imp0 + Phx[x]/imp0
-    Pex[x+1] = bex[x+1]*Pex[x+1] + aex[x+1]*(hz[x+1]-hz[x])
-    ey[x+1] = ey[x+1] + (hz[x+1]-hz[x])*imp0 +Pex[x+1]*imp0
+    Pex[x1+1] = bex[x1+1]*Pex[x1+1] + aex[x1+1]*(hz[x1+1]-hz[x1])
+    ey[x1+1] = ey[x1+1] + (hz[x1+1]-hz[x1])*imp0 +Pex[x1+1]*imp0
     ey[source_x] += source(time, delay, source_width)
     if time % frame_interval == 0:
     # tshow = size/2- source_width +10
