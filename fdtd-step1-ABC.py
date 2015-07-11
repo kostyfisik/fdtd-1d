@@ -29,7 +29,7 @@ imp0=377.0  # Free space impedance
 
 size=1800  # Domain size
 #Dielectric distribution
-epsilon = 5
+epsilon = 2
 eps= np.ones(size)
 eps[:] = epsilon
 
@@ -47,6 +47,7 @@ wrm1_nm1,wrm1_n,wrm1_np1 = 0,0,0 # Field at x=size-1 at time steps n-1, n, n+1
 
 #Source 
 source_width = 30.0*np.sqrt(epsilon)
+#source_width = size*np.sqrt(epsilon)
 delay = 10*source_width
 source_x = int(1.0*size/2.0)  #Source position
 def source(current_time, delay, source_width):
@@ -54,7 +55,7 @@ def source(current_time, delay, source_width):
 
 
 #Model
-total_steps = int(size*3.0+delay)  # Time stepping
+total_steps = int(3*(size+delay)*np.sqrt(epsilon))  # Time stepping
 frame_interval = int(total_steps/15.0)
 all_steps = np.linspace(0, size-1, size)
 

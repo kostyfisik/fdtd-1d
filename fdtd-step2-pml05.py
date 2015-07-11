@@ -32,7 +32,7 @@ imp0=377.0  # Free space impedance = sqrt(u0/e0)
 
 size=1800  # Domain size
 #Dielectric distribution
-epsilon = 5
+epsilon = 25
 eps= np.ones(size)
 eps[:] = epsilon
 
@@ -45,7 +45,7 @@ def source(current_time, delay, source_width):
     return np.exp(-(current_time-delay)**2/(2.0 * source_width**2))
 
 #Model
-total_steps = int(size*3.0+delay)  # Time stepping
+total_steps = int((size*2.0+delay)*np.sqrt(epsilon))  # Time stepping
 frame_interval = int(total_steps/15.0)
 all_steps = np.linspace(0, size-1, size)
 
@@ -87,8 +87,8 @@ for time in xrange(total_steps+1):
     ######################
     # Output
     ######################
-    if time == 3232:
-    # if time % frame_interval == 0:
+    #if time == 3232:
+    if time % frame_interval == 0:
         plt.clf()
         plt.title("Ez after t=%i"%time)
         plt.plot(all_steps, ez, all_steps, hy*imp0)
