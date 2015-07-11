@@ -148,7 +148,7 @@ for time in xrange(total_steps):
         s3 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
                                color='blue',alpha = 0.2)
         axs[2].add_patch(s3)
-        plt.savefig("step6-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+        plt.savefig("step6-at-time-%i-pml.png"%time,pad_inches=0.02, bbox_inches='tight')
         plt.draw()
         #    plt.show()
         plt.clf()

@@ -3,8 +3,6 @@
 #
 #    Copyright (C) 2015  Konstantin Ladutenko <kostyfisik@gmail.com>
 #
-#    This file is part of python-scattnlay
-#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -92,7 +90,7 @@ for time in xrange(total_steps+1):
         plt.clf()
         plt.title("Ez after t=%i"%time)
         plt.plot(all_steps, ez, all_steps, hy*imp0)
-        plt.savefig("step2-at-time-%i-pml_width-%i.png"%(time,int(pml_width)),pad_inches=0.02, bbox_inches='tight')
+        plt.savefig("step2-at-time-%i-pml-width-%i.png"%(time,int(pml_width)),pad_inches=0.02, bbox_inches='tight')
         plt.draw()
         #    plt.show()
         plt.clf()
