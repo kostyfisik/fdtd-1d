@@ -21,7 +21,6 @@
 # B. Schneider, www.eecs.wsu.edu/~schneidj/ufdtd, 2010.
 
 import numpy as np
-import math as m
 import matplotlib.pyplot as plt
 from time import sleep
 from matplotlib import patches
@@ -52,36 +51,14 @@ print("After slab epsilon is %f"%epsilon3)
 refeps= np.ones(size)
 refeps[:] = epsilon1
 
-# setting  ABC constants _AFTER_ epsilon (we need speed of ligth in media)
-# Taflove, eq. 6.35
-# Left boundary
 c = 1/np.sqrt(eps[0])
-al = (c-1)/(c+1)
-bl = 2/(c + 1)
-refal,refbl,refar,refbr = al,bl,al,bl
 cref = c
-wl_nm1,wl_n,wl_np1 = 0,0,0 # Field at x=0 at time steps n-1, n, n+1
-wlp1_nm1,wlp1_n,wlp1_np1 = 0,0,0 # Field at x=1 at time steps n-1, n, n+1
-# Right boundary
-c = 1/np.sqrt(eps[-1])
-ar = (c-1)/(c+1)
-br = 2/(c + 1)
-wr_nm1,wr_n,wr_np1 = 0,0,0 # Field at x=size at time steps n-1, n, n+1
-wrm1_nm1,wrm1_n,wrm1_np1 = 0,0,0 # Field at x=size-1 at time steps n-1, n, n+1
-
-# Reference field 
-refwl_nm1,refwl_n,refwl_np1 = 0,0,0 # Field at x=0 at time steps n-1, n, n+1
-refwlp1_nm1,refwlp1_n,refwlp1_np1 = 0,0,0 # Field at x=1 at time steps n-1, n, n+1
-refwr_nm1,refwr_n,refwr_np1 = 0,0,0 # Field at x=size at time steps n-1, n, n+1
-refwrm1_nm1,refwrm1_n,refwrm1_np1 = 0,0,0 # Field at x=size-1 at time steps n-1, n, n+1
-
-
 #Source 
 source_width = wavelength*3.0*np.sqrt(max(epsilon1,epsilon2))
 delay = 10*source_width
 source_x = int(1.0*size/10.0)  #Source position
 def source(current_time, delay, source_width):
-    amp =  m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
+    amp =  np.exp(-(current_time-delay)**2/(2.0 * source_width**2))
     if current_time > delay:
         amp = 1.0
     return amp/np.sqrt(epsilon1)*np.sin(2*np.pi*current_time*cref/wavelength)
@@ -91,64 +68,68 @@ total_steps = int(size*4.0+delay)  # Time stepping
 frame_interval = int(total_steps/35.0)
 all_steps = np.linspace(0, size-1, size)
 
+#CPML (Inan pp.228-230)
+dx = 1.0
+R0 = 1e-5
+m = 4.0  # Order of polynomial grading
+pml_width = 20.0
+sxmax = -(m+1)*np.log(R0)/2/imp0/(pml_width*dx)
+sx = np.zeros(size)
+sxm = np.zeros(size)
+
+for mm in xrange(int(pml_width)):
+    sx[mm+1] = sxmax*((pml_width-mm-0.5)/pml_width)**m
+    sxm[mm] = sxmax*((pml_width-mm)/pml_width)**m  # Shifted to the right
+    sx[size-mm-1] = sxmax*((pml_width-mm-0.5)/pml_width)**m  
+    sxm[size-mm-1] = sxmax*((pml_width-mm)/pml_width)**m
+# print(sx, sxm)
+aex = np.exp(-sx*imp0)-1
+bex = np.exp(-sx*imp0)
+ahx = np.exp(-sxm*imp0)-1
+bhx = np.exp(-sxm*imp0)
+
+x = np.arange(0,size-1,1)
+x1 = np.arange(0,size-1,1)
+
 #Inital field E_z and H_y is equal to zero
 ez = np.zeros(size)
 hy = np.zeros(size)
 refez = np.zeros(size)
 refhy = np.zeros(size)
-x = np.arange(0,size-1,1)
-#print(x)
+Phx = np.zeros(size)
+Pex = np.zeros(size)
+refPhx = np.zeros(size)
+refPex = np.zeros(size)
+
 for time in xrange(total_steps):
     ######################
     #Magnetic field
     ######################
-    hy[x] = hy[x] + (ez[x+1] - ez[x])/imp0
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    wrm1_np1 = hy[-2]
-    wr_np1 = -wrm1_nm1 + ar*(wrm1_np1+wr_nm1) + br*(wr_n+wrm1_n)
-    hy[-1] = wr_np1
-    #Cycle field values at boundary
-    wr_nm1, wrm1_nm1 = wr_n, wrm1_n
-    wr_n, wrm1_n = wr_np1, wrm1_np1
+    Phx[x] = bhx[x]*Phx[x] + ahx[x]*(ez[x+1] - ez[x])
+    hy[x] = hy[x] + (ez[x+1] - ez[x])/imp0 + Phx[x]/imp0
     ######################
     #Magnetic field reference
     ######################
-    refhy[x] = refhy[x] + (refez[x+1] - refez[x])/imp0
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    refwrm1_np1 = refhy[-2]
-    refwr_np1 = -refwrm1_nm1 + refar*(refwrm1_np1+refwr_nm1) + refbr*(refwr_n+refwrm1_n)
-    refhy[-1] = refwr_np1
-    #Cycle field values at boundary
-    refwr_nm1, refwrm1_nm1 = refwr_n, refwrm1_n
-    refwr_n, refwrm1_n = refwr_np1, refwrm1_np1
+    refPhx[x] = bhx[x]*refPhx[x] + ahx[x]*(refez[x+1] - refez[x])
+    refhy[x] = refhy[x] + (refez[x+1] - refez[x])/imp0 + refPhx[x]/imp0
     ######################
     #Electric field
     ######################
-    ez[x+1] = ez[x+1] + (hy[x+1]-hy[x])*imp0/eps[x+1]
+    Pex[x1+1] = bex[x1+1]*Pex[x1+1] + aex[x1+1]*(hy[x1+1]-hy[x1])
+    ez[x1+1] = ez[x1+1] + (hy[x1+1]-hy[x1])*imp0/eps[x1+1] +Pex[x1+1]*imp0/eps[x1+1]
     ez[source_x] += source(time, delay, source_width)
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    wlp1_np1 = ez[1]
-    wl_np1 = -wlp1_nm1 + al*(wlp1_np1+wl_nm1) + bl*(wl_n+wlp1_n)
-    ez[0] = wl_np1
-    #Cycle field values at boundary
-    wl_nm1, wlp1_nm1 = wl_n, wlp1_n
-    wl_n, wlp1_n = wl_np1, wlp1_np1
     ######################
     #Electric field reference
     ######################
-    refez[x+1] = refez[x+1] + (refhy[x+1]-refhy[x])*imp0/refeps[x+1]
+    refPex[x1+1] = bex[x1+1]*refPex[x1+1] + aex[x1+1]*(refhy[x1+1]-refhy[x1])
+    refez[x1+1] = refez[x1+1] + (refhy[x1+1]-refhy[x1])*imp0/refeps[x1+1] +refPex[x1+1]*imp0/refeps[x1+1]
     refez[source_x] += source(time, delay, source_width)
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    refwlp1_np1 = refez[1]
-    refwl_np1 = -refwlp1_nm1 + refal*(refwlp1_np1+refwl_nm1) + refbl*(refwl_n+refwlp1_n)
-    refez[0] = refwl_np1
-    #Cycle field values at boundary
-    refwl_nm1, refwlp1_nm1 = refwl_n, refwlp1_n
-    refwl_n, refwlp1_n = refwl_np1, refwlp1_np1
+
     ######################
     # Output
     ######################
     if time % frame_interval == 0:
+    #if time  == 6825:
         #plt.clf()
         fig, axs = plt.subplots(3,1)#, sharey=True, sharex=True)
         fig.tight_layout()
