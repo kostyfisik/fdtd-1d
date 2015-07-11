@@ -69,7 +69,7 @@ bex = np.exp(-sx*imp0)
 ahx = np.exp(-sxm*imp0)-1
 bhx = np.exp(-sxm*imp0)
 
-x = np.arange(1,size-2,1)
+x = np.arange(1,size-1,1)
 
 for time in xrange(total_steps+1):
     Phx[x] = bhx[x]*Phx[x] + ahx[x]*(ey[x+1] - ey[x])
