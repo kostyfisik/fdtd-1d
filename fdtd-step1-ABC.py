@@ -94,7 +94,11 @@ for time in xrange(total_steps):
         plt.clf()
         plt.title("Ez after t=%i"%time)
         plt.plot(all_steps, ez, all_steps, hy*imp0)
-        plt.show()
+        plt.savefig("step1-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+        plt.draw()
+        #    plt.show()
+        plt.clf()
+        plt.close()
 
 
 

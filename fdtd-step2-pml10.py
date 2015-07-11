@@ -30,28 +30,33 @@ from time import sleep
 
 imp0=377.0  # Free space impedance = sqrt(u0/e0)
 
-size=301  # Domain size
+size=1800  # Domain size
+#Dielectric distribution
+epsilon = 5
+eps= np.ones(size)
+eps[:] = epsilon
+
 #Source 
-source_width = int(size/30.0)
-delay = 15*source_width
+source_width = 30.0*np.sqrt(epsilon)
+delay = 10*source_width
 
 source_x = int(size/2.0)
 def source(current_time, delay, source_width):
     return np.exp(-(current_time-delay)**2/(2.0 * source_width**2))
 
 #Model
-total_steps = 2*int(size+delay)  # Time stepping
-frame_interval = int(total_steps/25.0)
+total_steps = int(size*3.0+delay)  # Time stepping
+frame_interval = int(total_steps/15.0)
 all_steps = np.linspace(0, size-1, size)
 
-ey = np.zeros(size)
-hz = np.zeros(size)
+ez = np.zeros(size)
+hy = np.zeros(size)
 
 
 #CPML (Inan pp.228-230)
 dx = 1.0
-R0 = 1e-6
-m = 4  # Order of polynomial grading
+R0 = 1e-7
+m = 3.57  # Order of polynomial grading
 pml_width = 10.0
 sxmax = -(m+1)*np.log(R0)/2/imp0/(pml_width*dx)
 sx = np.zeros(size)
@@ -74,27 +79,40 @@ x = np.arange(0,size-1,1)
 x1 = np.arange(0,size-1,1)
 
 for time in xrange(total_steps+1):
-    Phx[x] = bhx[x]*Phx[x] + ahx[x]*(ey[x+1] - ey[x])
-    hz[x] = hz[x] + (ey[x+1] - ey[x])/imp0 + Phx[x]/imp0
-    Pex[x1+1] = bex[x1+1]*Pex[x1+1] + aex[x1+1]*(hz[x1+1]-hz[x1])
-    ey[x1+1] = ey[x1+1] + (hz[x1+1]-hz[x1])*imp0 +Pex[x1+1]*imp0
-    ey[source_x] += source(time, delay, source_width)
-    if time % frame_interval == 0:
-    # tshow = size/2- source_width +10
-    # if time > tshow and time < tshow+20:
-        fig, axs = plt.subplots(2,1)#, sharey=True, sharex=True)
-        fig.tight_layout()
-        plt.title("After t=%i"%time)
-        axs[0].plot(all_steps, ey, label="Ey")
-        axs[0].plot(all_steps, hz*imp0,  label="Hz*imp0")
-        axs[0].legend(loc='upper left')
-        crop = np.arange(-5,0,1)
-        axs[1].plot(all_steps[crop], ey[crop],all_steps[crop], hz[crop]*imp0,  label="Ey")
-        plt.savefig("step0-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+    Phx[x] = bhx[x]*Phx[x] + ahx[x]*(ez[x+1] - ez[x])
+    hy[x] = hy[x] + (ez[x+1] - ez[x])/imp0 + Phx[x]/imp0
+    Pex[x1+1] = bex[x1+1]*Pex[x1+1] + aex[x1+1]*(hy[x1+1]-hy[x1])
+    ez[x1+1] = ez[x1+1] + (hy[x1+1]-hy[x1])*imp0/eps[x1] +Pex[x1+1]*imp0/eps[x1]
+    ez[source_x] += source(time, delay, source_width)
+    ######################
+    # Output
+    ######################
+    # if time % frame_interval == 0:
+    if time == 3232:
+        plt.clf()
+        plt.title("Ez after t=%i"%time)
+        plt.plot(all_steps, ez, all_steps, hy*imp0)
+        plt.savefig("step2-at-time-%i-pml_width-%i.png"%(time,int(pml_width)),pad_inches=0.02, bbox_inches='tight')
         plt.draw()
         #    plt.show()
         plt.clf()
         plt.close()
+    # if time % frame_interval == 0:
+    # # tshow = size/2- source_width +10
+    # # if time > tshow and time < tshow+20:
+    #     fig, axs = plt.subplots(2,1)#, sharey=True, sharex=True)
+    #     fig.tight_layout()
+    #     plt.title("After t=%i"%time)
+    #     axs[0].plot(all_steps, ez, label="Ez")
+    #     axs[0].plot(all_steps, hy*imp0,  label="Hy*imp0")
+    #     axs[0].legend(loc='upper left')
+    #     crop = np.arange(-5,0,1)
+    #     axs[1].plot(all_steps[crop], ez[crop],all_steps[crop], hy[crop]*imp0,  label="Ez")
+    #     plt.savefig("step2-at-time-%i.png"%time,pad_inches=0.02, bbox_inches='tight')
+    #     plt.draw()
+    #     #    plt.show()
+    #     plt.clf()
+    #     plt.close()
 
 
 
