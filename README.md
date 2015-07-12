@@ -14,7 +14,7 @@ presentation should provide a sequence of images as a time evolution
 finish at the moment where the electric field is vanished (all energy
 is in the magnetic field).
 
-## Step 1 and 2
+## Step 1,2, and 3
 
 Provide absorbing (Mur ABC) and PML (simplified CPML) boundary
 condition. Compare ABC with  5,10, and 20 cell PML.
@@ -35,7 +35,7 @@ and half-wavelength slab width cases.
 ## Bonus script
 
 You can put all the graphical results to "fig" directory,
-generate-report.py will list all the file in it and generate LaTeX
-presenation (using Beamer package). After that is should be easy to
+generate-report.py will list all the files in it and generate LaTeX
+presenation (using Beamer package). After that it should be easy to
 provide a single file report with all the figures (do not forget to
 provide reasonable captions to the figures)
