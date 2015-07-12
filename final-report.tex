@@ -1,0 +1,301 @@
+%%\documentclass[fullscreen=true, handout]{beamer}
+\documentclass[fullscreen=true]{beamer}
+\usetheme[secheader]{Boadilla}
+%%\usetheme{Boadilla}
+%%\usetheme[height=7mm]{Rochester} 
+%%\useinnertheme{rounded}
+ \usecolortheme{seahorse}
+%% \usecolortheme{whale}
+%% \usecolortheme{rose}
+%%\setbeamertemplate{navigation symbols}{\insertframenavigationsymbol}
+%% or
+\beamertemplatenavigationsymbolsempty
+%% \setbeamertemplate[info line]{footline} %%Не работает
+%% {\quad\strut\insertsection
+%% \hfill\insertframenumber/\inserttotalframenumber\strut\quad} 
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc} %%apt-get install cm-super
+%%\usepackage[english, russian]{babel}
+\usepackage[english]{babel}
+\emergencystretch=35pt %%Чтобы нe было строчек, вылезших на поля
+\usepackage{ragged2e} %% to use \justifying
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{multicol}
+\usepackage{listings}
+%% \lstset{language=C++,
+%%   backgroundcolor=\color{Black},
+%%    basicstyle=\color{White}\tiny\ttfamily,
+%%    keywordstyle=\color{Orange},
+%%    identifierstyle=\color{Cyan},
+%%    stringstyle=\color{Red}, 
+%%    commentstyle=\color{Green},  
+%%    breaklines=true,
+%%    breakatwhitespace=true,
+%%    tabsize=10,
+%%    showstringspaces=false%%
+%% }
+%%or better
+\lstset{breakatwhitespace,
+language=C++,
+columns=fullflexible,
+keepspaces,
+breaklines,
+tabsize=2,
+backgroundcolor=\color{white},
+basicstyle=\color{black}\small\ttfamily,
+keywordstyle=\color{orange},
+identifierstyle=\color{blue},
+stringstyle=\color{red}, 
+commentstyle=\color{green},  
+showstringspaces=false,
+extendedchars=true}
+\newcommand{\transhi}{40} %% Переменная - хорошая прозрачность
+\setbeamercovered{transparent = \transhi} 
+\setbeamertemplate{caption}[numbered]
+\usepackage{hyperref}
+\begin{document}
+%% ----------------------------------------------------------------
+\title[\textbf{FDTD 1D example with Python}]{\textbf{FDTD 1D example
+    with Python}\\{\small Example task for lectures "Computations in Physics" 
+\\ ITMO University, spring 2015}
+}
+
+\author[k.ladutenko@metalab.ifmo.ru]{\textbf{Konstantin Ladutenko}%
+}
+
+%% ----------------------------------------------------------------
+\begin{frame}{}
+  \titlepage
+  \begin{center}
+    All the sources are available at\\
+    \textbf{\href{https://github.com/kostyfisik/fdtd-1d}{https://github.com/kostyfisik/fdtd-1d}}
+  \end{center}
+\end{frame}
+
+\begin{frame}{Contents} %%Добавить интриги
+\begin{multicols}{2}
+  \tableofcontents%%[pausesections]
+\end{multicols}
+\end{frame}
+\section{Step0: Vanish E field}
+
+\begin{frame}
+  \begin{block}{Task 0:}
+    Simulate a system with magnetic mirror boundary condition (H=0) on
+    one side and electric mirror (E= 0) on the other side. The source
+    is a Gaussian profile propagating to boundaries and back, source
+    located exactly in the center of the simulated domain. The
+    successful presentation should provide a sequence of images as a
+    time evolution (or animation) for electric and magnetic
+    fields. The simulation should finish at the moment where the
+    electric field is vanished (all energy is in the magnetic field).
+  \end{block}
+\end{frame}
+
+\subsection{step0-at-time-1200.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-1200.png}%
+    \caption{Source produces two Gaussian pulses}
+  \end{figure}
+\end{frame}
+
+
+\subsection{step0-at-time-2400.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-2400.png}%
+    \caption{Before reflection}
+  \end{figure}
+\end{frame}
+
+\subsection{step0-at-time-4200.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-4200.png}%
+    \caption{After reflection}
+  \end{figure}
+\end{frame}
+
+\subsection{step0-at-time-5998.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-5998.png}%
+    \caption{Last step just before vanishing E field}
+  \end{figure}
+\end{frame}
+
+\subsection{step0-at-time-5999.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-5999.png}%
+    \caption{E field vanished. Noise corresponds to numerical accuracy. }
+  \end{figure}
+\end{frame}
+
+\subsection{step0-at-time-6000.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step0-at-time-6000.png}%
+    \caption{The next time step}
+  \end{figure}
+\end{frame}
+
+\section{Mur ABC and CPML}
+\begin{frame}
+  \begin{block}{Step 1, 2, and 3:}
+    Provide absorbing (Mur ABC) and PML (simplified CPML) boundary
+    condition. Compare ABC with  5,10, and 20 cell PML.
+  \end{block}
+  \begin{block}{Result:}
+    For free space Mur ABC is almost perfect. For host media with
+    $\epsilon = 5$ the performance is in between 5 and 10 cell CPML,
+    20 cell CPML is the best.
+  \end{block}
+\end{frame}
+\subsection{step1-at-time-1680-esp1.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step1-at-time-1680-esp1.png}%
+    \caption{Just after reflection of Gaussian pulses using Mur
+      boundary condition. Almost perfect for free space.}
+  \end{figure}
+\end{frame}
+
+\subsection{step1-at-time-3232.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step1-at-time-3232.png}%
+    \caption{For the host media with $\epsilon=5$ there is some reflection.}
+  \end{figure}
+\end{frame}
+
+
+\subsection{step2-at-time-3232-pml-width-10-eps1.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step2-at-time-3232-pml-width-10-eps1.png}%
+    \caption{For free space CPML performs very well too.}
+  \end{figure}
+\end{frame}
+
+\subsection{step2-at-time-3232-pml-width-10.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step2-at-time-3232-pml-width-10.png}%
+    \caption{For $epsilon=5$ 10 cells CPML has one order of magnitude less reflection.}
+  \end{figure}
+\end{frame}
+
+\subsection{step2-at-time-3232-pml-width-20.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step2-at-time-3232-pml-width-20.png}%
+    \caption{20 cells CPML reduces reflection for three orders of
+      magnitude compared to 10 cell.}
+  \end{figure}
+\end{frame}
+
+\subsection{step2-at-time-3232-pml-width-5.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step2-at-time-3232-pml-width-5.png}%
+    \caption{5 cells PML performs rather poor.}
+  \end{figure}
+\end{frame}
+
+\section{Fresnel equations}
+\begin{frame}
+  \begin{block}{Task 4:}
+    Compare against Fresnel equations, find the
+    limits of FDTD applicability.
+  \end{block}
+  \begin{block}{Transmission equation:}
+    %$T = 1 -\left| \right$
+    \begin{center}
+      $T_{Fresnel} = 1-\left|\cfrac{n_1-n_2}{n_1+n_2}\right|^2$
+    \end{center}
+    \href{http://en.wikipedia.org/wiki/Fresnel_equations}{http://en.wikipedia.org/wiki/Fresnel\_equations}
+
+  \end{block}
+\end{frame}
+
+
+\begin{frame}
+  \textbf{Results:}
+  \begin{block}{
+    $n_1 = 2.828427, n_2 = 1.414214$}
+    $T_{Fresnel} = 0.888889$\\
+    FDTD ratio = 0.888761 Error = 0.014358\%\\
+  \end{block}
+
+  \begin{block}{   $n_1 = 1.732051, n_2 = 2.236068$}
+    $T_{Fresnel} = 0.983867$\\
+    FDTD ratio = 0.983915 Error =
+    0.004879\%\\
+  \end{block}
+  \begin{block}{$n_1 = 1.000000, n_2 = 3.000000$}
+    $T_{Fresnel} = 0.750000$\\
+    FDTD ratio = 0.750060 Error = 0.008024\%
+  \end{block}
+\end{frame}
+
+\section{Dielectric slab}
+
+\begin{frame}
+  \begin{block}{Task 5 and 6:}
+    Compare against single dielectric slab (e.g
+    http://www.ece.rutgers.edu/~orfanidi/ewa/ch05.pdf), you should
+    provide simulation of reflection-less cases of a quarter-wavelength
+    and half-wavelength slab width cases.
+  \end{block}
+\end{frame}
+
+\subsection{step5-at-time-2880.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step5-at-time-2880.png}%
+    \caption{\textbf{Half-wavelength slab}: switching periodic source
+      on. First plane: green curve - wave in free space, blue curve -
+      with a slab. Other two are the difference of these curves. Last plane:
+      left part of the difference, it is the reflection only. During
+      switching on there is some reflection.}
+  \end{figure}
+\end{frame}
+
+\subsection{step5-at-time-4032.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step5-at-time-4032.png}%
+    \caption{\textbf{Half-wavelength slab}: in steady state the
+      reflection is reduced 100 times more!}
+  \end{figure}
+\end{frame}
+
+\subsection{step6-at-time-5070.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step6-at-time-5070.png}%
+    \caption{\textbf{Quarter-wavelength slab}: switching on.}
+  \end{figure}
+\end{frame}
+
+\subsection{step6-at-time-6825-abc.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step6-at-time-6825-abc.png}%
+    \caption{\textbf{Quarter-wavelength slab}: steady state}
+  \end{figure}
+\end{frame}
+
+\subsection{step6-at-time-6825-pml.png}
+\begin{frame}
+  \begin{figure}
+    \includegraphics[width=0.75\textwidth]{fig/step6-at-time-6825-pml.png}%
+    \caption{\textbf{Quarter-wavelength slab}: steady state using CPML
+    boundary condition instead of Mur ABC. The reflection was reduced
+    two times just due to change of computational method.}
+  \end{figure}
+\end{frame}
+\end{document}
