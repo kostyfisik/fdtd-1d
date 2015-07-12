@@ -30,7 +30,7 @@ imp0=377.0  # Free space impedance = sqrt(u0/e0)
 
 size=1800  # Domain size
 #Dielectric distribution
-epsilon = 5
+epsilon = 1
 eps= np.ones(size)
 eps[:] = epsilon
 
