@@ -3,11 +3,14 @@
 Example task for lectures "Computations in Physics" in ITMO
 University, spring 2015
 
+![Final report in *.pdf format](final-report.pdf)
+
+
 ## Step 0
 
 Simulate a system with magnetic mirror boundary condition (H=0) on one
 side and electric mirror (E= 0) on the other side. The source is a
-gaussian profile propagating to boundaries and back, source located
+Gaussian profile propagating to boundaries and back, source located
 exactly in the center of the simulated domain. The successful
 presentation should provide a sequence of images as a time evolution
 (or animation) for electric and magnetic fields. The simulation should
@@ -29,13 +32,14 @@ FDTD applicability.
 
 Compare against single dielectric slab (e.g
 http://www.ece.rutgers.edu/~orfanidi/ewa/ch05.pdf),  you should
-privide simulation of reflectionless cases   of a quarter-wavelength
+provide simulation of reflection-less cases   of a quarter-wavelength
 and half-wavelength slab width cases.
 
 ## Bonus script
 
 You can put all the graphical results to "fig" directory,
 generate-report.py will list all the files in it and generate LaTeX
-presenation (using Beamer package). After that it should be easy to
+presentation (using Beamer package). After that it should be easy to
 provide a single file report with all the figures (do not forget to
 provide reasonable captions to the figures)
+
