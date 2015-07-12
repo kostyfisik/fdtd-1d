@@ -3,7 +3,7 @@
 Example task for lectures "Computations in Physics" in ITMO
 University, spring 2015
 
-![Final report in *.pdf format](final-report.pdf)
+![Final report in *.pdf format](https://github.com/kostyfisik/fdtd-1d/blob/master/final-report.pdf)
 
 
 ## Step 0
