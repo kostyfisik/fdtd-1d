@@ -1,9 +1,16 @@
 # fdtd-1d
 
 Example task for lectures "Computations in Physics" in ITMO
-University, spring 2015
+University, spring 2015, spring 2016
 
 [Final report in *.pdf format](https://github.com/kostyfisik/fdtd-1d/blob/master/final-report.pdf)
+
+Recommended books:
+
+(easy) Understanding the Finite-Difference Time-Domain Method, John B. Schneider, www.eecs.wsu.edu/~schneidj/ufdtd, 2010. 
+
+(full) A. Taflove and S. C. Hagness, Computational Electrodynamics: The Finite-Difference Time-Domain Method, 3rd  ed.  Norwood, MA: Artech House, 2005. 
+
 
 
 ## Step 0
