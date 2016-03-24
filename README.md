@@ -8,6 +8,7 @@ University, spring 2015, spring 2016
 Recommended books:
 
 (easy) Understanding the Finite-Difference Time-Domain Method, John B. Schneider, www.eecs.wsu.edu/~schneidj/ufdtd, 2010. 
+(it is also available at GitHub https://github.com/john-b-schneider/uFDTD )
 
 (full) A. Taflove and S. C. Hagness, Computational Electrodynamics: The Finite-Difference Time-Domain Method, 3rd  ed.  Norwood, MA: Artech House, 2005. 
 
