@@ -29,10 +29,11 @@ from time import sleep
 
 imp0=377.0  # Free space impedance
 
-size=5000  # Domain size
+size=300  # Domain size
 #Source 
-source_width = 100.0
-delay = 10*source_width
+source_width = 20.0
+delay = 0*source_width
+#delay = 5
 
 
 source_x = int(size/2.0)
@@ -40,14 +41,15 @@ def source(current_time, delay, source_width):
     return m.exp(-(current_time-delay)**2/(2.0 * source_width**2))
 
 #Model
-total_steps = int(size+delay)  # Time stepping
-frame_interval = int(total_steps/20.0)
+total_steps = int(2*size+delay)  # Time stepping
+frame_interval = int(total_steps/30.0)
 all_steps = np.linspace(0, size-1, size)
 
 
 ez = np.zeros(size)
 hy = np.zeros(size)
 for time in xrange(total_steps+1):
+#for time in xrange(50):
     hy[:-1] = hy[:-1] + (ez[1:] - ez[:-1])/imp0
     ez[1:] = ez[1:] + (hy[1:]-hy[:-1])*imp0
     ez[source_x] += source(time, delay, source_width)

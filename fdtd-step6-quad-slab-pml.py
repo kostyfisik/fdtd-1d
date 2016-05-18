@@ -27,12 +27,12 @@ from matplotlib import patches
 
 imp0=377.0  # Free space impedance
 
-size=400  # Domain size
+size=200  # Domain size
 wavelength = int(size/5.0) #in host media
 factor = 4.0 # for slab lambda/4 
 
 #Dielectric distribution
-epsilon1 = 1.2 # host
+epsilon1 = 1.0 # host
 epsilon2 = 4 # slab
 n1 = np.sqrt(epsilon1)
 n2 = np.sqrt(epsilon2)
@@ -70,9 +70,9 @@ all_steps = np.linspace(0, size-1, size)
 
 #CPML (Inan pp.228-230)
 dx = 1.0
-R0 = 1e-5
+R0 = 1e-9
 m = 4.0  # Order of polynomial grading
-pml_width = 20.0
+pml_width = 30.0
 sxmax = -(m+1)*np.log(R0)/2/imp0/(pml_width*dx)
 sx = np.zeros(size)
 sxm = np.zeros(size)
@@ -144,7 +144,8 @@ for time in xrange(total_steps):
         s2 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
                                color='blue',alpha = 0.2)
         axs[1].add_patch(s2)
-        axs[2].plot(all_steps[:int(size/2.0)], ez[:int(size/2.0)]-refez[:int(size/2.0)])        
+        axs[2].plot(all_steps[:int(size/2.0)], ez[:int(size/2.0)]-refez[:int(size/2.0)])
+        print("Max dEz = "+str(max(abs(ez[:int(size/2.0)]-refez[:int(size/2.0)]))))
         s3 = patches.Rectangle((int(size/2.0), -100), int(wavelength*n1/n2/factor), 200.0, zorder=0,
                                color='blue',alpha = 0.2)
         axs[2].add_patch(s3)

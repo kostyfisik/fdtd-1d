@@ -46,7 +46,7 @@ wr_nm1,wr_n,wr_np1 = 0,0,0 # Field at x=size at time steps n-1, n, n+1
 wrm1_nm1,wrm1_n,wrm1_np1 = 0,0,0 # Field at x=size-1 at time steps n-1, n, n+1
 
 #Source 
-source_width = 45.0*np.sqrt(epsilon)
+source_width = 30.0*np.sqrt(epsilon)
 #source_width = size*np.sqrt(epsilon)
 delay = 10*source_width
 source_x = int(1.0*size/2.0)  #Source position
@@ -55,9 +55,10 @@ def source(current_time, delay, source_width):
 
 
 #Model
-total_steps = int(1*(size+delay)*np.sqrt(epsilon))  # Time stepping
-frame_interval = int(total_steps/15.0)
+total_steps = int((size+delay)*np.sqrt(epsilon))  # Time stepping
+frame_interval = int(total_steps/30.0)
 all_steps = np.linspace(0, size-1, size)
+
 
 #Inital field E_z and H_y is equal to zero
 ez = np.zeros(size)
@@ -68,26 +69,14 @@ for time in xrange(total_steps):
     ######################
     #Magnetic field
     ######################
+    hy[-1] = hy[-2]
     hy[x] = hy[x] + (ez[x+1] - ez[x])/imp0
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    wrm1_np1 = hy[-2]
-    wr_np1 = -wrm1_nm1 + a*(wrm1_np1+wr_nm1) + b*(wr_n+wrm1_n)
-    hy[-1] = wr_np1
-    #Cycle field values at boundary
-    wr_nm1, wrm1_nm1 = wr_n, wrm1_n
-    wr_n, wrm1_n = wr_np1, wrm1_np1
     ######################
     #Electric field
     ######################
+    ez[0] = ez[1]
     ez[x+1] = ez[x+1] + (hy[x+1]-hy[x])*imp0/eps[x+1]
     ez[source_x] += source(time, delay, source_width)
-    #Evaluate Mur ABC value (eq. 6.35 Taflove)
-    wlp1_np1 = ez[1]
-    wl_np1 = -wlp1_nm1 + a*(wlp1_np1+wl_nm1) + b*(wl_n+wlp1_n)
-    ez[0] = wl_np1
-    #Cycle field values at boundary
-    wl_nm1, wlp1_nm1 = wl_n, wlp1_n
-    wl_n, wlp1_n = wl_np1, wlp1_np1
     ######################
     # Output
     ######################
