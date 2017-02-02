@@ -1,7 +1,7 @@
 # fdtd-1d
 
 Example task for lectures "Computations in Physics" in ITMO
-University, spring 2015, spring 2016
+University, spring (2015-2017)
 
 [Final report in *.pdf format](https://github.com/kostyfisik/fdtd-1d/blob/master/final-report.pdf)
 
